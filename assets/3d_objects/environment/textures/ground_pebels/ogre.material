@@ -1,0 +1,8 @@
+import * from "resources/ogre/scripts/materials/base.material"
+
+material /global/environment/ground_pebels : /base/normalmap/specular
+{
+    set_texture_alias DiffuseMap 3d_objects/environment/textures/ground_pebels/D.png
+    set_texture_alias NormalHeightMap 3d_objects/environment/textures/ground_pebels/N.png
+    set_texture_alias SpecularMap 3d_objects/environment/textures/ground_pebels/S.png
+}

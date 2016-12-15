@@ -1,0 +1,6 @@
+import * from "resources/ogre/scripts/materials/base.material"
+
+material /global/environment/snow : /base/simple
+{
+    set_texture_alias DiffuseMap 3d_objects/environment/textures/snow/D.png
+}

@@ -1,0 +1,6 @@
+import * from "resources/ogre/scripts/materials/base.material"
+
+material /global/environment/ground_mixed_forest : /base/simple
+{
+    set_texture_alias DiffuseMap 3d_objects/environment/textures/ground_mixed_forest/D.png
+}

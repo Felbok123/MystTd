@@ -1,0 +1,8 @@
+import * from "resources/ogre/scripts/materials/base.material"
+
+material /global/environment/ground_leaf_covered : /base/normalmap/specular
+{
+    set_texture_alias DiffuseMap 3d_objects/environment/textures/ground_leaf_covered/D.png
+    set_texture_alias NormalHeightMap 3d_objects/environment/textures/ground_leaf_covered/N.png
+    set_texture_alias SpecularMap 3d_objects/environment/textures/ground_leaf_covered/S.png
+}

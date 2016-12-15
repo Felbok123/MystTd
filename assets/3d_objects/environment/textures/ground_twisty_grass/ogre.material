@@ -1,0 +1,8 @@
+import * from "resources/ogre/scripts/materials/base.material"
+
+material /global/environment/ground_twisty_grass : /base/normalmap/specular
+{
+    set_texture_alias DiffuseMap 3d_objects/environment/textures/ground_twisty_grass/D.png
+    set_texture_alias NormalHeightMap 3d_objects/environment/textures/ground_twisty_grass/N.png
+    set_texture_alias SpecularMap 3d_objects/environment/textures/ground_twisty_grass/S.png
+}

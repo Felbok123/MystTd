@@ -1,0 +1,8 @@
+import * from "resources/ogre/scripts/materials/base.material"
+
+material /global/environment/stone_yellow : /base/normalmap/specular
+{
+    set_texture_alias DiffuseMap 3d_objects/environment/textures/stone_yellow/D.png
+    set_texture_alias NormalHeightMap 3d_objects/environment/textures/stone_yellow/N.png
+    set_texture_alias SpecularMap 3d_objects/environment/textures/stone_yellow/S.png
+}

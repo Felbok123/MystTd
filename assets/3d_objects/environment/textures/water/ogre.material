@@ -1,0 +1,51 @@
+import * from "resources/ogre/scripts/materials/base.material"
+
+material /global/environment/water : /base/normalmap/specular
+{
+    set_texture_alias DiffuseMap 3d_objects/environment/textures/water/D.png
+    set_texture_alias NormalHeightMap 3d_objects/environment/textures/water/N.png
+    set_texture_alias SpecularMap 3d_objects/environment/textures/water/S.png
+}
+
+//A material more suited for an ocean. The main feature is that it will do per-pixel fog calculation, in contrast to the regular per-vertex calculation.
+material /global/environment/water/ocean
+{
+	technique
+	{
+		pass
+		{
+			scene_blend alpha_blend 
+			cull_hardware none
+			cull_software none
+			depth_bias 16
+			vertex_program_ref Water/SimpleVp
+			{
+			}
+			fragment_program_ref Water/SimpleFp
+			{
+			}
+			texture_unit
+			{
+				texture 3d_objects/environment/textures/water/D.png
+				scroll_anim 0.01 0.01
+				scale 0.5 0.5
+			}
+		}
+	}
+	technique
+	{
+		pass
+		{
+			scene_blend modulate
+			cull_hardware none
+			cull_software none
+			depth_bias 16
+			texture_unit
+			{
+				texture 3d_objects/environment/textures/water/D.png
+				scroll_anim 0.01 0.01
+				scale 0.5 0.5
+			}
+		}
+	}
+}

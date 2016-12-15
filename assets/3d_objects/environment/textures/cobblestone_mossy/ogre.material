@@ -1,0 +1,8 @@
+import * from "resources/ogre/scripts/materials/base.material"
+
+material /global/environment/cobblestone_mossy : /base/normalmap/specular
+{
+    set_texture_alias DiffuseMap 3d_objects/environment/textures/cobblestone_mossy/D.png
+    set_texture_alias NormalHeightMap 3d_objects/environment/textures/cobblestone_mossy/N.png
+    set_texture_alias SpecularMap 3d_objects/environment/textures/cobblestone_mossy/S.png
+}
