@@ -79,13 +79,11 @@ public class IntroMeny extends AbstractAppState {
 
         initAtmosphere();
 
-        initFloorLighting();
-
         initFadeFilter();
 
         initKeyboardControls();
 
-        //   Music.playIntroTheme();
+
     }
 
     private void showTitle() {
@@ -108,21 +106,6 @@ public class IntroMeny extends AbstractAppState {
         /*
          * Skapa intro Menyn bakrund
          */
-        // new Floor(assetManager, rootNode);
-        // new Wall(assetManager, rootNode, new Vector3f(-50, 0, 250));
-        //  new Wall(assetManager, rootNode, new Vector3f(50, 0, 250));
-        //  new SkyBox(assetManager, rootNode);
-    }
-
-    private void initFloorLighting() {
-        floorLighting = new SpotLight();
-        floorLighting.setColor(ColorRGBA.Orange.mult(5f));
-        floorLighting.setSpotRange(1000);
-        floorLighting.setSpotOuterAngle(25 * FastMath.DEG_TO_RAD);
-        floorLighting.setSpotInnerAngle(10 * FastMath.DEG_TO_RAD);
-        floorLighting.setDirection(camera.getDirection());
-        floorLighting.setPosition(camera.getLocation());
-        rootNode.addLight(floorLighting);
     }
 
     private void initKeyboardControls() {
@@ -181,8 +164,6 @@ public class IntroMeny extends AbstractAppState {
     @Override
     public void cleanup() {
         setEnabled(false);
-
-        //  Music.stopIntroTheme();
 
         rootNode.removeLight(floorLighting);
         rootNode.detachAllChildren();

@@ -15,9 +15,6 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.cinematic.MotionPath;
-import com.jme3.cinematic.events.MotionEvent;
-import com.jme3.cinematic.events.MotionTrack;
 import com.jme3.input.FlyByCamera;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -25,17 +22,21 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.SpotLight;
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
+import com.mysstd.control.*;
+import com.mysstd.monsters.Concorde;
+import com.mysstd.monsters.Squidly;
 import com.mysstd.monsters.Teapot;
 import com.mysttd.object.PlayerBase;
+import com.mysttd.object.Tower;
 
 /**
  *
@@ -43,6 +44,7 @@ import com.mysttd.object.PlayerBase;
  */
 public class GameWorld extends AbstractAppState {
 
+    private GuiState gui;
     private SimpleApplication simpleApp;
     private AppStateManager stateManager;
     private AssetManager assetManager;
@@ -51,39 +53,32 @@ public class GameWorld extends AbstractAppState {
     private Camera camera;
     private FlyByCamera flyCam;
     private Node rootNode;
-    private Node guiNode;
-    private Node sceneNode = new Node("scene node");
     private Node beamNode = new Node("beam node");
     private Node towerNode = new Node("tower node");
     private Node enemyNode = new Node("enemy node");
-    private Node playerNode = new Node("player node");
     private AmbientLight atmosphere;
     private SpotLight cameraLighting;
     private Spatial gameWorld;
-    /*
-     * 
-     */
+    private boolean isGameOver = false;
+    private boolean isGamePaused = false;
+    private boolean isAddingTower = false;
+    private static final String TOWER_ADD = "add tower";
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
     private CharacterControl player;
     private Vector3f walkDirection = new Vector3f();
     private boolean left = false, right = false, up = false, down = false;
-    //Temporary vectors used on each frame.
-    //They here to avoid instanciating new vectors on each frame
     private Vector3f camDir = new Vector3f();
     private Vector3f camLeft = new Vector3f();
-    /*
-     *  
-     */
-    private MotionEvent motionControl;
-    /*
-     * 
-     */
     private PlayerBase base;
     private int baseHealth = 50;
-    MonsterMovement monstMov;
-    private long initialTime = 0;
-    private long currentTime = 0;
+    private MonsterMovement monstMov;
+    private long initialTime;
+    private long currentTime;
+    private long initialTime2;
+    private long timer2;
+    private int budget;
+    private float timerBeam = 0;
 
     public GameWorld(AmbientLight initialAtmosphere) {
         atmosphere = initialAtmosphere;
@@ -94,20 +89,27 @@ public class GameWorld extends AbstractAppState {
         super.initialize(stateManager, app);
 
         simpleApp = (SimpleApplication) app;
-        simpleApp.setDisplayFps(true);
+
         initResources();
+
+        initGUI();
 
         initCameraLighting();
 
-
-        // initWaypoint(makeTeapot());
         initGameInputs();
 
-        // initInputs();
-        attachNodes();
         initBase();
 
+        attachNodes();
+
+        setBudget(50);
+        initialTime2 = System.currentTimeMillis();
         initialTime = System.currentTimeMillis();
+    }
+
+    private void initGUI() {
+        gui = new GuiState(this);
+        stateManager.attach(gui);
     }
 
     public void initBase() {
@@ -120,9 +122,9 @@ public class GameWorld extends AbstractAppState {
 
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        //bulletAppState.getPhysicsSpace().enableDebug(assetManager);
 
-        // We re-use the flyby camera for rotation, while positioning is handled by physics
+
+
         viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
         flyCam.setMoveSpeed(100);
         flyCam.setDragToRotate(false);
@@ -130,8 +132,6 @@ public class GameWorld extends AbstractAppState {
 
         gameWorld = assetManager.loadModel("Scenes/thisScene.j3o");
 
-        // We set up collision detection for the scene by creating a
-        // compound collision shape and a static RigidBodyControl with mass zero.
         CollisionShape sceneShape = CollisionShapeFactory.createMeshShape((Node) gameWorld);
         landscape = new RigidBodyControl(sceneShape, 0);
         gameWorld.addControl(landscape);
@@ -162,16 +162,19 @@ public class GameWorld extends AbstractAppState {
     }
 
     private void setUpKeys() {
+        inputManager.addMapping(TOWER_ADD, new KeyTrigger(KeyInput.KEY_RETURN));
+        inputManager.addListener(actionListener, TOWER_ADD);
+
         inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_1));
+        inputManager.addMapping("1", new KeyTrigger(KeyInput.KEY_1));
         inputManager.addListener(movmentListener, "Left");
         inputManager.addListener(movmentListener, "Right");
         inputManager.addListener(movmentListener, "Up");
         inputManager.addListener(movmentListener, "Down");
-        inputManager.addListener(movmentListener, "Jump");
+        inputManager.addListener(movmentListener, "1");
 
     }
     private ActionListener movmentListener = new ActionListener() {
@@ -183,16 +186,45 @@ public class GameWorld extends AbstractAppState {
                 right = isPressed;
             } else if (binding.equals("Up")) {
                 up = isPressed;
-                System.out.println(player.getPhysicsLocation());
             } else if (binding.equals("Down")) {
                 down = isPressed;
-            } else if (binding.equals("Jump")) {
+            } else if (binding.equals("1")) {
                 if (isPressed) {
-                    int am = 1;
-                    base.removeHealth(am);
-                    System.out.println(base.getBaseHp());
-                    --am;
                 }
+            }
+        }
+    };
+    private ActionListener actionListener = new ActionListener() {
+        @Override
+        public void onAction(String name, boolean isPressed, float tpf) {
+            if (name.equals(TOWER_ADD) && isPressed && isAddingTower) {
+                Spatial tower;
+
+                Vector3f towerLocation = new Vector3f(camera.getLocation().getX(), 0, camera.getLocation().getZ());
+
+
+                switch (gui.getSelectedTower()) {
+                    case "laserTower":
+                        tower = Tower.generate(assetManager, Tower.LASER);
+                        break;
+                    case "lightTower":
+                        tower = Tower.generate(assetManager, Tower.LIGHT);
+                        break;
+                    default:
+                        gui.setSelectedTower("");
+                        isAddingTower = false;
+                        return;
+                }
+
+                tower.setLocalTranslation(towerLocation);
+                tower.addControl(new TowerControl(stateManager.getState(GameWorld.class)));
+
+
+                towerNode.attachChild(tower);
+                decreaseBudget(20);
+                gui.setSelectedTower("");
+
+                isAddingTower = false;
             }
         }
     };
@@ -209,12 +241,11 @@ public class GameWorld extends AbstractAppState {
         this.viewPort = simpleApp.getViewPort();
         this.inputManager = simpleApp.getInputManager();
         this.rootNode = simpleApp.getRootNode();
-        this.guiNode = simpleApp.getGuiNode();
+
 
     }
 
     private void attachNodes() {
-        rootNode.attachChild(sceneNode);
         rootNode.attachChild(beamNode);
         rootNode.attachChild(towerNode);
         rootNode.attachChild(enemyNode);
@@ -240,6 +271,16 @@ public class GameWorld extends AbstractAppState {
     @Override
     public void update(float tpf) {
 
+        timerBeam += tpf;
+        if (timerBeam > 30 * tpf) {
+            beamNode.detachAllChildren();
+            timerBeam = 0;
+        }
+
+        if (isGamePaused) {
+            return;
+        }
+
         camDir.set(camera.getDirection()).multLocal(0.6f);
         camLeft.set(camera.getLeft()).multLocal(0.4f);
         walkDirection.set(0, 0, 0);
@@ -255,37 +296,129 @@ public class GameWorld extends AbstractAppState {
         if (down) {
             walkDirection.addLocal(camDir.negate());
         }
-        if (base.getBaseHp() == 0) {
-            System.out.println("Game over");
-            base.getBase().detachAllChildren();
-            motionControl.stop();
-        }
         player.setWalkDirection(walkDirection);
         camera.setLocation(player.getPhysicsLocation());
-
+        if (base.getBaseHp() <= 0) {
+            System.out.println("Game over");
+            base.getBase().detachAllChildren();
+            enemyNode.detachAllChildren();
+            rootNode.detachAllChildren();
+            cleanup();
+            System.exit(0);
+        }
 
 
         currentTime = System.currentTimeMillis();
-        if (currentTime - initialTime >= 5000) {
 
-            monstMov = new MonsterMovement(assetManager, inputManager, enemyNode, motionControl, base);
-            // monstMov.moveMonster(teapot.makeTeapot(assetManager, enemyNode), monstMov.initWaypoint(assetManager))
+        monstMov = new MonsterMovement(enemyNode, base);
 
+        if (currentTime - initialTime >= 4000) {
+            /*
+             Teapot teapot = new Teapot(assetManager, enemyNode);
+             teapot.addEnemyControl(new MonsterControl(this));
+             monstMov.moveMonster(teapot.getMonsterModel(), monstMov.initNormalWaypoints(assetManager), (int) 1.5, 49);
+             */
         }
-        if (currentTime - initialTime >= 5000) {
-            Teapot teapot = new Teapot();
-            motionControl = new MotionEvent(teapot.makeTeapot(assetManager, enemyNode), monstMov.initWaypoint(assetManager));
-            motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
-            motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));
-            motionControl.setInitialDuration(60f);
-            motionControl.setSpeed(1);
-            motionControl.play();
 
+
+
+        if (currentTime - initialTime2 >= 6000) {
+
+            Squidly squid = new Squidly(assetManager, enemyNode);
+            squid.addEnemyControl(new MonsterControl(this));
+            monstMov.moveMonster(squid.getMonsterModel(), monstMov.initNormalWaypoints(assetManager), 1, 60);
+
+
+
+            if (timer2 + 3000 >= 500) {
+
+                Concorde bomber = new Concorde(assetManager, enemyNode);
+                bomber.addEnemyControl(new MonsterControl(this));
+                monstMov.moveMonster(bomber.getMonsterModel(), monstMov.initSkyWaypoints(assetManager), 1, 50);
+
+            }
             initialTime = System.currentTimeMillis();
+            timer2 = System.currentTimeMillis();
+            initialTime2 = System.currentTimeMillis();
+
         }
 
+    }
 
+    public void setPlayerAddingTower(boolean isPlayerAddingTower) {
+        this.isAddingTower = isPlayerAddingTower;
+    }
 
+    public boolean isPlayerAddingTower() {
+        return isAddingTower;
+    }
+
+    public Material getUnshadedMaterial() {
+        return new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+    }
+
+    public boolean isIsGameOver() {
+        return isGameOver;
+    }
+
+    public void setIsGameOver(boolean isGameOver) {
+        this.isGameOver = isGameOver;
+    }
+
+    public boolean isIsGamePaused() {
+        return isGamePaused;
+    }
+
+    public void setIsGamePaused(boolean isGamePaused) {
+        this.isGamePaused = isGamePaused;
+    }
+
+    public void setAmbientColor(ColorRGBA color) {
+        atmosphere.setColor(color.mult(5));
+    }
+
+    public int getBudget() {
+        return budget;
+    }
+
+    public void setBudget(int budget) {
+        this.budget = budget;
+    }
+
+    public void decreaseBudget(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException();
+        }
+        budget -= amount;
+    }
+
+    public void increaseBudget(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException();
+        }
+        budget += amount;
+    }
+
+    public Node getNode(String desiredNode) {
+        if (desiredNode == null) {
+            throw new IllegalStateException("desiredNode cannot be null");
+        }
+        Node node;
+        switch (desiredNode.toLowerCase()) {
+            case "beam":
+                node = beamNode;
+                break;
+            case "tower":
+                node = towerNode;
+                break;
+            case "enemy":
+                node = enemyNode;
+                break;
+            default:
+                throw new IllegalArgumentException("desiredNode can either be beam, tower, or enemy");
+        }
+
+        return node;
     }
 
     @Override
@@ -295,7 +428,7 @@ public class GameWorld extends AbstractAppState {
         rootNode.removeLight(atmosphere);
         rootNode.detachAllChildren();
 
-        // stateManager.detach(gui);
+        stateManager.detach(gui);
         System.exit(0);
     }
 }

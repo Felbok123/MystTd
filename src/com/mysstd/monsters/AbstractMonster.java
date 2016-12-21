@@ -8,6 +8,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.mysstd.control.MonsterControl;
 
 /**
  *
@@ -15,21 +16,21 @@ import com.jme3.scene.Spatial;
  */
 public abstract class AbstractMonster {
 
-    private Spatial monsterModel;
-    private int monsterCount;
+    protected Spatial monsterModel;
+    protected int monsterCount;
 
-    protected abstract void initEnemyModel(AssetManager assetManager, Node rootNode);
-
-    public void moveMonster(Vector3f wu) {
-        monsterModel.move(wu);
-    }
-
-    public void moveFromPoint(Vector3f wu) {
-        monsterModel.setLocalTranslation(wu);
-    }
+    protected abstract void initEnemyModel(AssetManager assetManager, Node enemyNode);
 
     public Vector3f currentLocation() {
         return monsterModel.getLocalTranslation();
+    }
+
+    public void move(Vector3f amountInWorldUnits) {
+        monsterModel.move(amountInWorldUnits);
+    }
+
+    public void moveFromOrigin(Vector3f amountInWorldUnits) {
+        monsterModel.setLocalTranslation(amountInWorldUnits);
     }
 
     public void removeFromScene() {
@@ -40,10 +41,12 @@ public abstract class AbstractMonster {
     public int getMonsterCount() {
         return monsterCount;
     }
-    /*
-     public void addEnemyControl(EnemyControl control)
-     {
-     monsterModel.addControl(control);
-     }
-     */
+
+    public void addEnemyControl(MonsterControl control) {
+        monsterModel.addControl(control);
+    }
+
+    public Spatial getMonsterModel() {
+        return monsterModel;
+    }
 }

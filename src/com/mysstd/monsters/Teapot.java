@@ -15,35 +15,35 @@ import com.jme3.scene.Spatial;
  *
  * @author Odium
  */
-public class Teapot {
+public final class Teapot extends AbstractMonster {
 
-    public Spatial makeTeapot(AssetManager assetManager, Node rootNode) {
-        Spatial teapot;
+    public Teapot(AssetManager assetManager, Node enemyNode) {
+        initEnemyModel(assetManager, enemyNode);
+    }
+
+    @Override
+    protected void initEnemyModel(AssetManager assetManager, Node enemyNode) {
         DirectionalLight dl = new DirectionalLight();
         dl.setColor(ColorRGBA.White);
+        monsterModel = assetManager.loadModel("Models/Teapot.j3o");
+        monsterModel.setName("Teapot" + monsterCount++);
+        monsterModel.setUserData("health", 2000);
+        monsterModel.setUserData("damg", 2);
+        monsterModel.setUserData("gold", 5);
 
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-
         mat.setFloat("Shininess", 1f);
-
         mat.setBoolean("UseMaterialColors", true);
-
         mat.setColor("Ambient", ColorRGBA.Black);
-
         mat.setColor("Diffuse", ColorRGBA.DarkGray);
-
         mat.setColor("Specular", ColorRGBA.White.mult(0.6f));
 
-        teapot = assetManager.loadModel("Models/Teapot.j3o");
+        monsterModel.setLocalScale(3);
+        monsterModel.setMaterial(mat);
+        monsterModel.addLight(dl);
 
-        teapot.setName("Teapot");
-        teapot.setLocalScale(3);
-        teapot.setMaterial(mat);
-        teapot.addLight(dl);
-        teapot.setUserData("health", 2);
 
-        rootNode.attachChild(teapot);
-        return teapot;
 
+        enemyNode.attachChild(monsterModel);
     }
 }
