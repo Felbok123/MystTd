@@ -29,8 +29,8 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        setDisplayFps(true);
-        setDisplayStatView(true);
+        setDisplayFps(false);
+        setDisplayStatView(false);
         flyCam.setDragToRotate(false);
 
         stateManager.attach(new IntroMeny());

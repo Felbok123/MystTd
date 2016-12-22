@@ -62,7 +62,7 @@ public class MonsterMovement {
         path.setCurveTension(0.009f);
         path.setPathSplineType(Spline.SplineType.Linear);
 
-        path.enableDebugShape(assetManager, rootNode);
+        //  path.enableDebugShape(assetManager, rootNode);
         // path.disableDebugShape();
 
 
@@ -105,7 +105,7 @@ public class MonsterMovement {
         path.setCurveTension(0.009f);
         path.setPathSplineType(Spline.SplineType.Linear);
 
-        path.enableDebugShape(assetManager, rootNode);
+        //  path.enableDebugShape(assetManager, rootNode);
         // path.disableDebugShape();
 
 
@@ -139,87 +139,4 @@ public class MonsterMovement {
 
 
     }
-    /*
-     public void initInputs() {
-
-     inputManager.addMapping("display_hidePath", new KeyTrigger(KeyInput.KEY_P));
-
-     inputManager.addMapping("SwitchPathInterpolation", new KeyTrigger(KeyInput.KEY_I));
-
-     inputManager.addMapping("tensionUp", new KeyTrigger(KeyInput.KEY_U));
-
-     inputManager.addMapping("tensionDown", new KeyTrigger(KeyInput.KEY_J));
-
-     inputManager.addMapping("play_stop", new KeyTrigger(KeyInput.KEY_SPACE));
-
-     ActionListener acl = new ActionListener() {
-     public void onAction(String name, boolean keyPressed, float tpf) {
-     /*
-     if (name.equals("display_hidePath") && keyPressed) {
-
-     if (active) {
-
-     active = false;
-
-     path.disableDebugShape();
-
-     } else {
-
-     active = true;
-
-     path.enableDebugShape(assetManager, rootNode);
-
-     }
-
-     }
-     /
-     if (name.equals("play_stop") && keyPressed) {
-
-     if (playing) {
-
-     playing = false;
-
-     motionControl.stop();
-     rootNode.detachChild(teapot);
-     } else {
-     rootNode.attachChild(teapot);
-     playing = true;
-     motionControl.play();
-     }
-
-     }
-     if (name.equals("SwitchPathInterpolation") && keyPressed) {
-
-     if (path.getPathSplineType() == Spline.SplineType.CatmullRom) {
-
-     path.setPathSplineType(Spline.SplineType.Linear);
-
-     } else {
-
-     path.setPathSplineType(Spline.SplineType.CatmullRom);
-
-     }
-
-     }
-     if (name.equals("tensionUp") && keyPressed) {
-
-     path.setCurveTension(path.getCurveTension() + 0.1f);
-
-     System.err.println("Tension : " + path.getCurveTension());
-
-     }
-
-     if (name.equals("tensionDown") && keyPressed) {
-
-     path.setCurveTension(path.getCurveTension() - 0.1f);
-
-     System.err.println("Tension : " + path.getCurveTension());
-     }
-     }
-     };
-
-     inputManager.addListener(acl, "display_hidePath", "play_stop", "SwitchPathInterpolation", "tensionUp", "tensionDown");
-
-     }
-     */
 }

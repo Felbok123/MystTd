@@ -40,44 +40,33 @@ public class IntroMeny extends AbstractAppState {
     private SimpleApplication simpleApp;
     private AppStateManager stateManager;
     private AssetManager assetManager;
-    private Camera camera;
     private FlyByCamera flyCam;
     private ViewPort viewPort;
     private InputManager inputManager;
     private Node rootNode;
     private Node guiNode;
-    private long initialTime;
-    private long currentTime;
     private boolean hasPlayerPressedEnter;
     private FadeFilter fadeFilter;
-    private SpotLight floorLighting;
     private AmbientLight ambientLight;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
 
         super.initialize(stateManager, app);
-        initialTime = System.currentTimeMillis();
 
         simpleApp = (SimpleApplication) app;
 
         this.stateManager = simpleApp.getStateManager();
         this.assetManager = simpleApp.getAssetManager();
-        this.camera = simpleApp.getCamera();
         this.flyCam = simpleApp.getFlyByCamera();
         this.inputManager = simpleApp.getInputManager();
         this.rootNode = simpleApp.getRootNode();
         this.guiNode = simpleApp.getGuiNode();
         this.viewPort = simpleApp.getViewPort();
-
+        flyCam.setEnabled(false);
 
         showTitle();
-
-        setCamPosition();
-
-        initBackgroundIntro();
-
-        initAtmosphere();
+        initInstruction();
 
         initFadeFilter();
 
@@ -87,19 +76,24 @@ public class IntroMeny extends AbstractAppState {
     }
 
     private void showTitle() {
-        BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/AppleChancery.fnt");
+        BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
         BitmapText gameTitle = new BitmapText(guiFont, false);
         gameTitle.setSize(guiFont.getCharSet().getRenderedSize());
         gameTitle.setText("Myst TD");
         gameTitle.setColor(ColorRGBA.Red);
-        gameTitle.setLocalTranslation(885, 500 + gameTitle.getLineHeight(), 0);
+        gameTitle.setLocalTranslation(600, 500 + gameTitle.getLineHeight(), 0);
         guiNode.attachChild(gameTitle);
     }
 
-    private void setCamPosition() {
-        camera.setLocation(new Vector3f(8.677275f, 0.67683005f, 264.01727f));
-        camera.setRotation(new Quaternion(0.019309944f, 0.95095277f, 0.060660467f, -0.30271494f));
-        flyCam.setEnabled(false);
+    private void initInstruction() {
+
+        BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
+        BitmapText gameInstruction = new BitmapText(guiFont, false);
+        gameInstruction.setSize(guiFont.getCharSet().getRenderedSize());
+        gameInstruction.setText("Press Enter To Start");
+        gameInstruction.setColor(ColorRGBA.Red);
+        gameInstruction.setLocalTranslation(520, 300 + gameInstruction.getLineHeight(), 0);
+        guiNode.attachChild(gameInstruction);
     }
 
     private void initBackgroundIntro() {
@@ -140,11 +134,6 @@ public class IntroMeny extends AbstractAppState {
             Logger.getLogger(IntroMeny.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        currentTime = System.currentTimeMillis();
-
-        if (currentTime - initialTime >= 2000) {
-        }
-
 
     }
 
@@ -155,17 +144,10 @@ public class IntroMeny extends AbstractAppState {
         viewPort.addProcessor(fpp);
     }
 
-    private void initAtmosphere() {
-        ambientLight = new AmbientLight();
-        ambientLight.setColor(ColorRGBA.Gray.mult(5));
-        rootNode.addLight(ambientLight);
-    }
-
     @Override
     public void cleanup() {
         setEnabled(false);
 
-        rootNode.removeLight(floorLighting);
         rootNode.detachAllChildren();
 
         fadeFilter.fadeIn();

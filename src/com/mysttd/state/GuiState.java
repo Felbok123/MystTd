@@ -170,7 +170,7 @@ public class GuiState extends AbstractAppState {
 
     private void setLaserTowerText(boolean canSetText) {
         if (canSetText) {
-            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/PoorRichardBig.fnt");
+            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
             BitmapText laserTowerText = new BitmapText(myFont);
             laserTowerText.setName("laserTowerText");
             laserTowerText.setSize(myFont.getCharSet().getRenderedSize());
@@ -187,7 +187,7 @@ public class GuiState extends AbstractAppState {
 
     private void setLightTowerText(boolean canSetText) {
         if (canSetText) {
-            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/PoorRichardBig.fnt");
+            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
             BitmapText lightTowerText = new BitmapText(myFont);
             lightTowerText.setName("lightTowerText");
             lightTowerText.setSize(myFont.getCharSet().getRenderedSize());
@@ -204,7 +204,7 @@ public class GuiState extends AbstractAppState {
 
     private void setUnknownTowerText(boolean canSetText) {
         if (canSetText) {
-            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/PoorRichardBig.fnt");
+            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
             BitmapText unknownTowerText = new BitmapText(myFont);
             unknownTowerText.setName("unknownTowerText");
             unknownTowerText.setSize(myFont.getCharSet().getRenderedSize());
@@ -294,7 +294,7 @@ public class GuiState extends AbstractAppState {
         budgetIcon.move(15, 40, 0);
         simpleApp.getGuiNode().attachChild(budgetIcon);
 
-        BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/PoorRichardBig.fnt");
+        BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
         BitmapText budgetText = new BitmapText(myFont);
         budgetText.setName("budgetText");
         budgetText.setSize(myFont.getCharSet().getRenderedSize());
