@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mysttd.state;
+package com.mysttd.GameScene;
 
+import com.mysstd.monsters.MonsterMovement;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
@@ -44,7 +45,7 @@ import com.mysttd.object.Tower;
  */
 public class GameWorld extends AbstractAppState {
 
-    private GuiState gui;
+    private GameGui gui;
     private SimpleApplication simpleApp;
     private AppStateManager stateManager;
     private AssetManager assetManager;
@@ -57,12 +58,11 @@ public class GameWorld extends AbstractAppState {
     private Node towerNode = new Node("tower node");
     private Node enemyNode = new Node("enemy node");
     private AmbientLight atmosphere;
-    private SpotLight cameraLighting;
     private Spatial gameWorld;
     private boolean isGameOver = false;
     private boolean isGamePaused = false;
     private boolean isAddingTower = false;
-    private static final String TOWER_ADD = "add tower";
+    private static final String ADD_TOWER = "add tower";
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
     private CharacterControl player;
@@ -77,7 +77,7 @@ public class GameWorld extends AbstractAppState {
     private long currentTime;
     private long initialTime2;
     private long timer2;
-    private int budget;
+    private int gold;
     private float timerBeam = 0;
 
     public GameWorld(AmbientLight initialAtmosphere) {
@@ -94,21 +94,19 @@ public class GameWorld extends AbstractAppState {
 
         initGUI();
 
-        initCameraLighting();
-
-        initGameInputs();
+        initGameScene();
 
         initBase();
 
         attachNodes();
 
-        setBudget(50);
+        setGold(50);
         initialTime2 = System.currentTimeMillis();
         initialTime = System.currentTimeMillis();
     }
 
     private void initGUI() {
-        gui = new GuiState(this);
+        gui = new GameGui(this);
         stateManager.attach(gui);
     }
 
@@ -118,12 +116,10 @@ public class GameWorld extends AbstractAppState {
 
     }
 
-    public void initGameInputs() {
+    public void initGameScene() {
 
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-
-
 
         viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
         flyCam.setMoveSpeed(100);
@@ -145,25 +141,20 @@ public class GameWorld extends AbstractAppState {
         // Start position 
         player.setPhysicsLocation(new Vector3f(50, 5, 5));
 
-
         bulletAppState.getPhysicsSpace().add(landscape);
         bulletAppState.getPhysicsSpace().add(player);
-
-
 
         TerrainLodControl lodControl = ((Node) rootNode).getControl(TerrainLodControl.class);
         if (lodControl != null) {
             lodControl.setCamera(simpleApp.getCamera());
         }
-
-
         rootNode.attachChild(gameWorld);
 
     }
 
     private void setUpKeys() {
-        inputManager.addMapping(TOWER_ADD, new KeyTrigger(KeyInput.KEY_RETURN));
-        inputManager.addListener(actionListener, TOWER_ADD);
+        inputManager.addMapping(ADD_TOWER, new KeyTrigger(KeyInput.KEY_RETURN));
+        inputManager.addListener(actionListener, ADD_TOWER);
 
         inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
@@ -197,7 +188,7 @@ public class GameWorld extends AbstractAppState {
     private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
-            if (name.equals(TOWER_ADD) && isPressed && isAddingTower) {
+            if (name.equals(ADD_TOWER) && isPressed && isAddingTower) {
                 Spatial tower;
 
                 Vector3f towerLocation = new Vector3f(camera.getLocation().getX(), 0, camera.getLocation().getZ());
@@ -221,7 +212,7 @@ public class GameWorld extends AbstractAppState {
 
 
                 towerNode.attachChild(tower);
-                decreaseBudget(20);
+                decreaseGold(20);
                 gui.setSelectedTower("");
 
                 isAddingTower = false;
@@ -250,22 +241,6 @@ public class GameWorld extends AbstractAppState {
         rootNode.attachChild(towerNode);
         rootNode.attachChild(enemyNode);
         rootNode.attachChild(gameWorld);
-    }
-
-    private void initCameraLighting() {
-        cameraLighting = new SpotLight();
-        cameraLighting.setColor(ColorRGBA.Orange.mult(5f));
-        cameraLighting.setSpotRange(1000);
-        cameraLighting.setSpotOuterAngle(15 * FastMath.DEG_TO_RAD);
-        cameraLighting.setSpotInnerAngle(10 * FastMath.DEG_TO_RAD);
-
-        rootNode.addLight(cameraLighting);
-        updateCameraLighting();
-    }
-
-    private void updateCameraLighting() {
-        cameraLighting.setDirection(camera.getDirection());
-        cameraLighting.setPosition(camera.getLocation());
     }
 
     @Override
@@ -377,26 +352,26 @@ public class GameWorld extends AbstractAppState {
         atmosphere.setColor(color.mult(5));
     }
 
-    public int getBudget() {
-        return budget;
+    public int getGold() {
+        return gold;
     }
 
-    public void setBudget(int budget) {
-        this.budget = budget;
+    public void setGold(int gold) {
+        this.gold = gold;
     }
 
-    public void decreaseBudget(int amount) {
+    public void decreaseGold(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException();
         }
-        budget -= amount;
+        gold -= amount;
     }
 
-    public void increaseBudget(int amount) {
+    public void increaseGold(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException();
         }
-        budget += amount;
+        gold += amount;
     }
 
     public Node getNode(String desiredNode) {

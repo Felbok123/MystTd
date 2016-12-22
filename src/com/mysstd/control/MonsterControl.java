@@ -4,7 +4,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
-import com.mysttd.state.GameWorld;
+import com.mysttd.GameScene.GameWorld;
 import java.util.LinkedList;
 
 public class MonsterControl extends AbstractControl {
@@ -35,7 +35,7 @@ public class MonsterControl extends AbstractControl {
             }
         }
         if (getHealth() <= 0) {
-            currentGame.increaseBudget((int) spatial.getUserData("gold"));
+            currentGame.increaseGold((int) spatial.getUserData("gold"));
             spatial.removeFromParent();
 
 

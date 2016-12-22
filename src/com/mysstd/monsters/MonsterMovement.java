@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mysttd.state;
+package com.mysstd.monsters;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.cinematic.MotionPath;
@@ -15,6 +15,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.mysttd.object.PlayerBase;
+import com.mysttd.GameScene.GameWorld;
 
 /**
  *
@@ -122,7 +123,7 @@ public class MonsterMovement {
 
                 }
 
-                //   System.out.println(motionControl.getCurrentWayPoint());
+            
             }
         });
         return path;

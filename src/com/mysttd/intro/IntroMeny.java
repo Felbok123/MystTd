@@ -17,17 +17,12 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
-import com.jme3.light.SpotLight;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FadeFilter;
-import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
-import com.mysttd.state.GameWorld;
+import com.mysttd.GameScene.GameWorld;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +40,7 @@ public class IntroMeny extends AbstractAppState {
     private InputManager inputManager;
     private Node rootNode;
     private Node guiNode;
-    private boolean hasPlayerPressedEnter;
+    private boolean pressEnter;
     private FadeFilter fadeFilter;
     private AmbientLight ambientLight;
 
@@ -53,6 +48,7 @@ public class IntroMeny extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app) {
 
         super.initialize(stateManager, app);
+
 
         simpleApp = (SimpleApplication) app;
 
@@ -66,7 +62,12 @@ public class IntroMeny extends AbstractAppState {
         flyCam.setEnabled(false);
 
         showTitle();
+
         initInstruction();
+
+        // initBackgroundIntro();
+
+        initAtmosphere();
 
         initFadeFilter();
 
@@ -104,20 +105,20 @@ public class IntroMeny extends AbstractAppState {
 
     private void initKeyboardControls() {
         inputManager.addMapping("Start Game", new KeyTrigger(KeyInput.KEY_RETURN));
-        inputManager.addListener(actionListener, "Start Game");
+        inputManager.addListener(startGameListener, "Start Game");
     }
-    private ActionListener actionListener = new ActionListener() {
+    private ActionListener startGameListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isKeyPressed, float tpf) {
             if (name.equals("Start Game") && !isKeyPressed) {
-                hasPlayerPressedEnter = true;
+                pressEnter = true;
             }
         }
     };
 
     @Override
     public void update(float tpf) {
-        if (hasPlayerPressedEnter) {
+        if (pressEnter) {
             if (fadeFilter.getValue() == 1) {
                 guiNode.detachAllChildren();
                 fadeFilter.fadeOut();
@@ -134,7 +135,6 @@ public class IntroMeny extends AbstractAppState {
             Logger.getLogger(IntroMeny.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-
     }
 
     private void initFadeFilter() {
@@ -142,6 +142,12 @@ public class IntroMeny extends AbstractAppState {
         FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
         fpp.addFilter(fadeFilter);
         viewPort.addProcessor(fpp);
+    }
+
+    private void initAtmosphere() {
+        ambientLight = new AmbientLight();
+        ambientLight.setColor(ColorRGBA.Gray.mult(5));
+        rootNode.addLight(ambientLight);
     }
 
     @Override

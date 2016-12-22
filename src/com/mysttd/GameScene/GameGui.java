@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mysttd.state;
+package com.mysttd.GameScene;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
@@ -15,31 +15,30 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.ColorRGBA;
-import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 
 /**
  *
  * @author Odium
  */
-public class GuiState extends AbstractAppState {
+public class GameGui extends AbstractAppState {
 
-    String[] optionNames = {"laserTower", "lightTower", "unknownTower"};
+    String[] optionNames = {"laserTower", "lightTower",};
     private GameWorld gameState;
     private SimpleApplication simpleApp;
-    private static final String TOGGLED_INVENTORY = "toggle inventory";
-    private static final String SELECTED_TOWER = "selected target";
-    private static final String MOVING_RIGHT = "moving right";
-    private static final String MOVING_LEFT = "moving left";
+    private static final String TOGGLE_INV = "toggle inventory";
+    private static final String TOWER_SELECT = "selected target";
+    private static final String MOVE_RIGHT = "moving right";
+    private static final String MOVE_LEFT = "moving left";
     private String selectedTower = "";
     private InputManager inputManager;
     private Picture inventoryBackground;
     private boolean isInventoryToggled = false;
     private boolean laserTowerSelected = false;
     private boolean lightTowerSelected = false;
-    private boolean unknownTowerSelected = false;
+//    private boolean unknownTowerSelected = false;
 
-    public GuiState(GameWorld gameState) {
+    public GameGui(GameWorld gameState) {
         this.gameState = gameState;
     }
 
@@ -68,18 +67,18 @@ public class GuiState extends AbstractAppState {
 
     private void initKeyboardControls() {
 
-        inputManager.addMapping(SELECTED_TOWER, new KeyTrigger(KeyInput.KEY_RETURN));
-        inputManager.addMapping(MOVING_RIGHT, new KeyTrigger(KeyInput.KEY_RIGHT));
-        inputManager.addMapping(MOVING_LEFT, new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping(TOGGLED_INVENTORY, new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping(TOWER_SELECT, new KeyTrigger(KeyInput.KEY_RETURN));
+        inputManager.addMapping(MOVE_RIGHT, new KeyTrigger(KeyInput.KEY_RIGHT));
+        inputManager.addMapping(MOVE_LEFT, new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping(TOGGLE_INV, new KeyTrigger(KeyInput.KEY_SPACE));
 
-        inputManager.addListener(actionListener, TOGGLED_INVENTORY, SELECTED_TOWER, MOVING_LEFT, MOVING_RIGHT);
+        inputManager.addListener(actionListener, TOGGLE_INV, TOWER_SELECT, MOVE_LEFT, MOVE_RIGHT);
     }
     private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
 
-            if (name.equals(SELECTED_TOWER) && !isPressed && !gameState.isPlayerAddingTower()) {
+            if (name.equals(TOWER_SELECT) && !isPressed && !gameState.isPlayerAddingTower()) {
                 if (laserTowerSelected) {
                     toggleInventory();
                     gameState.setPlayerAddingTower(true);
@@ -97,32 +96,32 @@ public class GuiState extends AbstractAppState {
                 }
             }
 
-            if (name.equals(TOGGLED_INVENTORY) && !isPressed) {
+            if (name.equals(TOGGLE_INV) && !isPressed) {
                 toggleInventory();
             }
 
 
-            if (name.equals(MOVING_RIGHT) && isInventoryToggled && !isPressed) {
+            if (name.equals(MOVE_RIGHT) && isInventoryToggled && !isPressed) {
                 if (laserTowerSelected) {
                     highlightInventoryOption("lightTower");
                     return;
                 }
 
                 if (lightTowerSelected) {
-                    highlightInventoryOption("unknownTower");
+                    highlightInventoryOption("laserTower");
                     return;
                 }
 
-                highlightInventoryOption("laserTower");
+                // highlightInventoryOption("laserTower");
             }
 
-            if (name.equals(MOVING_LEFT) && isInventoryToggled && !isPressed) {
+            if (name.equals(MOVE_LEFT) && isInventoryToggled && !isPressed) {
                 if (lightTowerSelected) {
                     highlightInventoryOption("laserTower");
                     return;
                 }
 
-                if (unknownTowerSelected) {
+                if (laserTowerSelected) {
                     highlightInventoryOption("lightTower");
                     return;
                 }
@@ -140,7 +139,6 @@ public class GuiState extends AbstractAppState {
                 resetInventoryOptions();
                 option = (Picture) simpleApp.getGuiNode().getChild(desiredOption);
                 option.setImage(simpleApp.getAssetManager(), "Interface/laserTowerHover.png", true);
-                setLaserTowerText(true);
                 laserTowerSelected = true;
                 break;
 
@@ -148,16 +146,12 @@ public class GuiState extends AbstractAppState {
                 resetInventoryOptions();
                 option = (Picture) simpleApp.getGuiNode().getChild(desiredOption);
                 option.setImage(simpleApp.getAssetManager(), "Interface/lightTowerHover.png", true);
-                setLightTowerText(true);
                 lightTowerSelected = true;
                 break;
 
             case "unknownTower":
                 resetInventoryOptions();
-                option = (Picture) simpleApp.getGuiNode().getChild(desiredOption);
-                option.setImage(simpleApp.getAssetManager(), "Interface/unknownTowerHover.png", true);
-                setUnknownTowerText(true);
-                unknownTowerSelected = true;
+
                 break;
 
             case "none":
@@ -168,69 +162,14 @@ public class GuiState extends AbstractAppState {
         }
     }
 
-    private void setLaserTowerText(boolean canSetText) {
-        if (canSetText) {
-            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
-            BitmapText laserTowerText = new BitmapText(myFont);
-            laserTowerText.setName("laserTowerText");
-            laserTowerText.setSize(myFont.getCharSet().getRenderedSize());
-            laserTowerText.setText("Laser              10");
-            laserTowerText.move(350, 160, 0);
-            simpleApp.getGuiNode().attachChild(laserTowerText);
-        }
-
-        Spatial text = simpleApp.getGuiNode().getChild("laserTowerText");
-        if (text != null) {
-            text.removeFromParent();
-        }
-    }
-
-    private void setLightTowerText(boolean canSetText) {
-        if (canSetText) {
-            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
-            BitmapText lightTowerText = new BitmapText(myFont);
-            lightTowerText.setName("lightTowerText");
-            lightTowerText.setSize(myFont.getCharSet().getRenderedSize());
-            lightTowerText.setText("Light              15");
-            lightTowerText.move(600, 160, 0);
-            simpleApp.getGuiNode().attachChild(lightTowerText);
-        }
-
-        Spatial text = simpleApp.getGuiNode().getChild("lightTowerText");
-        if (text != null) {
-            text.removeFromParent();
-        }
-    }
-
-    private void setUnknownTowerText(boolean canSetText) {
-        if (canSetText) {
-            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
-            BitmapText unknownTowerText = new BitmapText(myFont);
-            unknownTowerText.setName("unknownTowerText");
-            unknownTowerText.setSize(myFont.getCharSet().getRenderedSize());
-            unknownTowerText.setText("?????              30");
-            unknownTowerText.move(850, 160, 0);
-            simpleApp.getGuiNode().attachChild(unknownTowerText);
-        }
-
-        Spatial text = simpleApp.getGuiNode().getChild("unknownTowerText");
-        if (text != null) {
-            text.removeFromParent();
-        }
-    }
-
     private void resetInventoryOptions() {
         for (int i = 0; i < optionNames.length; i++) {
             Picture option = (Picture) simpleApp.getGuiNode().getChild(optionNames[i]);
             option.setImage(simpleApp.getAssetManager(), "Interface/" + optionNames[i] + ".png", true);
         }
         laserTowerSelected = false;
-        setLaserTowerText(false);
-        setLightTowerText(false);
-        setUnknownTowerText(false);
-
         lightTowerSelected = false;
-        unknownTowerSelected = false;
+        //   unknownTowerSelected = false;
     }
 
     private void addInventoryOptions() {
@@ -241,28 +180,24 @@ public class GuiState extends AbstractAppState {
                     true);
             option.setWidth(78);
             option.setHeight(247);
-            option.move(370 + 250 * i, 175, 0);
+            option.move(500 + 250 * i, 175, 0);
             simpleApp.getGuiNode().attachChild(option);
         }
 
-        /* Highlight first option */
+
         highlightInventoryOption("laserTower");
     }
 
     private void toggleInventory() {
         if (isInventoryToggled) {
             simpleApp.getFlyByCamera().setEnabled(true);
-            simpleApp.getGuiNode().getChild("budgetIcon").removeFromParent();
-            simpleApp.getGuiNode().getChild("budgetText").removeFromParent();
+            simpleApp.getGuiNode().getChild("goldIcon").removeFromParent();
+            simpleApp.getGuiNode().getChild("goldText").removeFromParent();
             inputManager.setCursorVisible(false);
 
             for (int i = 0; i < optionNames.length; i++) {
                 simpleApp.getGuiNode().getChild(optionNames[i]).removeFromParent();
             }
-
-            setLaserTowerText(false);
-            setLightTowerText(false);
-            setUnknownTowerText(false);
 
             simpleApp.getGuiNode().getChild("inventoryBackground").removeFromParent();
 
@@ -287,20 +222,20 @@ public class GuiState extends AbstractAppState {
     }
 
     private void showBudget() {
-        Picture budgetIcon = new Picture("budgetIcon");
-        budgetIcon.setImage(simpleApp.getAssetManager(), "Interface/goldbig.png", true);
-        budgetIcon.setWidth(64);
-        budgetIcon.setHeight(64);
-        budgetIcon.move(15, 40, 0);
-        simpleApp.getGuiNode().attachChild(budgetIcon);
+        Picture goldIcon = new Picture("goldIcon");
+        goldIcon.setImage(simpleApp.getAssetManager(), "Interface/goldbig.png", true);
+        goldIcon.setWidth(64);
+        goldIcon.setHeight(64);
+        goldIcon.move(15, 40, 0);
+        simpleApp.getGuiNode().attachChild(goldIcon);
 
         BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
-        BitmapText budgetText = new BitmapText(myFont);
-        budgetText.setName("budgetText");
-        budgetText.setSize(myFont.getCharSet().getRenderedSize());
-        budgetText.setText(Integer.toString(gameState.getBudget()));
-        budgetText.move(92, 86, 0);
-        simpleApp.getGuiNode().attachChild(budgetText);
+        BitmapText goldText = new BitmapText(myFont);
+        goldText.setName("goldText");
+        goldText.setSize(myFont.getCharSet().getRenderedSize());
+        goldText.setText(Integer.toString(gameState.getGold()));
+        goldText.move(92, 86, 0);
+        simpleApp.getGuiNode().attachChild(goldText);
     }
 
     public void setSelectedTower(String tower) {

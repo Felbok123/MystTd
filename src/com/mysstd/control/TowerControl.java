@@ -14,7 +14,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.shape.Line;
-import com.mysttd.state.GameWorld;
+import com.mysttd.GameScene.GameWorld;
 
 /**
  *
@@ -24,7 +24,7 @@ public class TowerControl extends AbstractControl {
 
     private GameWorld gameState;
     private Node beamNode;
-    // private boolean isStillAttackingPreviousEnemy;
+    // private boolean previousEnemy
     private Spatial currentEnemy;
 
     public TowerControl(GameWorld gameState) {
