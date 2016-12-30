@@ -23,22 +23,13 @@ import com.mysttd.GameScene.GameWorld;
  */
 public class MonsterMovement {
 
-    private Node rootNode;
-    // private AssetManager assetManager;
-    //  private InputManager inputManager;
-    MotionPath path;
-    //private MotionEvent motionControl;
+    private Node enemyNode;
+    private MotionPath path;
     private PlayerBase base;
     private GameWorld gameWorld;
 
-
-    /*
-     *  lägg till listener på path vad den gör när den når en waypoint/slutet. 
-     * Använda MotionEvent istället för MotionTrack?
-     * Fixa så monster kommer i vågor kan ha knapp tryckning också?
-     */
-    public MonsterMovement(Node rootNode, PlayerBase base) {
-        this.rootNode = rootNode;
+    public MonsterMovement(Node enemyNode, PlayerBase base) {
+        this.enemyNode = enemyNode;
         this.base = base;
 
     }
@@ -76,11 +67,9 @@ public class MonsterMovement {
                     base.removeHealth((Integer) control.getSpatial().getUserData("damg"));
                     System.out.println("Your base is under attack! " + control.getSpatial().getName());
                     System.out.println("Your base has : " + base.getBaseHp() + " health left");
-                    rootNode.detachChild(control.getSpatial());
+                    enemyNode.detachChild(control.getSpatial());
 
                 }
-
-                //   System.out.println(motionControl.getCurrentWayPoint());
             }
         });
         return path;
@@ -119,11 +108,9 @@ public class MonsterMovement {
                     base.removeHealth((Integer) control.getSpatial().getUserData("damg"));
                     System.out.println("Your base is under attack! " + control.getSpatial().getName());
                     System.out.println("Your base has : " + base.getBaseHp() + " health left");
-                    rootNode.detachChild(control.getSpatial());
+                    enemyNode.detachChild(control.getSpatial());
 
                 }
-
-            
             }
         });
         return path;

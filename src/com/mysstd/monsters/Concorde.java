@@ -25,13 +25,11 @@ public final class Concorde extends AbstractMonster {
         dl.setColor(ColorRGBA.White);
 
         monsterModel = assetManager.loadModel("Models/concorde11.j3o");
-        monsterModel.setName("Bomber" + monsterCount++);
-        monsterModel.setUserData("health", 30000);
+        monsterModel.setName("Bomber");
+        monsterModel.setUserData("health", 5000);
         monsterModel.setUserData("damg", 5);
         monsterModel.setUserData("gold", 25);
         monsterModel.addLight(dl);
-
-
 
         enemyNode.attachChild(monsterModel);
 

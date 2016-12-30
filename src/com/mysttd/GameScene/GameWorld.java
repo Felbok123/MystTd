@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mysttd.GameScene;
 
 import com.mysstd.monsters.MonsterMovement;
@@ -22,10 +18,8 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
-import com.jme3.light.SpotLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
@@ -35,14 +29,9 @@ import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.mysstd.control.*;
 import com.mysstd.monsters.Concorde;
 import com.mysstd.monsters.Squidly;
-import com.mysstd.monsters.Teapot;
 import com.mysttd.object.PlayerBase;
 import com.mysttd.object.Tower;
 
-/**
- *
- * @author Odium
- */
 public class GameWorld extends AbstractAppState {
 
     private GameGui gui;
@@ -193,13 +182,14 @@ public class GameWorld extends AbstractAppState {
 
                 Vector3f towerLocation = new Vector3f(camera.getLocation().getX(), 0, camera.getLocation().getZ());
 
-
                 switch (gui.getSelectedTower()) {
                     case "laserTower":
-                        tower = Tower.generate(assetManager, Tower.LASER);
+                        tower = Tower.generate(assetManager, Tower.LASER, 2);
+                        decreaseGold(20);
                         break;
                     case "lightTower":
-                        tower = Tower.generate(assetManager, Tower.LIGHT);
+                        tower = Tower.generate(assetManager, Tower.LIGHT, 5);
+                        decreaseGold(30);
                         break;
                     default:
                         gui.setSelectedTower("");
@@ -212,7 +202,7 @@ public class GameWorld extends AbstractAppState {
 
 
                 towerNode.attachChild(tower);
-                decreaseGold(20);
+                //  decreaseGold(20);
                 gui.setSelectedTower("");
 
                 isAddingTower = false;
@@ -315,9 +305,7 @@ public class GameWorld extends AbstractAppState {
             initialTime = System.currentTimeMillis();
             timer2 = System.currentTimeMillis();
             initialTime2 = System.currentTimeMillis();
-
         }
-
     }
 
     public void setPlayerAddingTower(boolean isPlayerAddingTower) {

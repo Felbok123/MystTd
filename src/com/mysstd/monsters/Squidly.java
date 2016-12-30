@@ -27,7 +27,7 @@ public final class Squidly extends AbstractMonster {
 
         monsterModel = assetManager.loadModel("Models/Squiddlythingy.j3o");
         monsterModel.setName("Squidly" + monsterCount++);
-        monsterModel.setUserData("health", 15000);
+        monsterModel.setUserData("health", 4000);
         monsterModel.setUserData("damg", 5);
         monsterModel.setUserData("gold", 10);
         monsterModel.addLight(dl);

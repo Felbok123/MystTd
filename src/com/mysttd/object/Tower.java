@@ -18,10 +18,10 @@ public class Tower {
     public static final String LASER = "laser";
     public static final String LIGHT = "light";
 
-    public static Geometry generate(AssetManager assetManager, String type) {
+    public static Geometry generate(AssetManager assetManager, String type, int damage) {
         Geometry tower = (Geometry) assetManager.loadModel("Models/tower.j3o");
         tower.setUserData("type", type);
-        tower.setUserData("damage", 1);
+        tower.setUserData("damage", damage);
         tower.setMaterial(chooseMaterial(assetManager, type));
         tower.scale(2);
 
@@ -50,7 +50,7 @@ public class Tower {
 
 
         mat.setTexture("GlowMap", assetManager.loadTexture(glowMapPath));
-
+        
         return mat;
     }
 }

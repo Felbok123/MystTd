@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mysstd.control;
 
 import com.jme3.material.Material;
@@ -16,10 +12,6 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.shape.Line;
 import com.mysttd.GameScene.GameWorld;
 
-/**
- *
- * @author Odium
- */
 public class TowerControl extends AbstractControl {
 
     private GameWorld gameState;
@@ -39,9 +31,7 @@ public class TowerControl extends AbstractControl {
             if (enemy.getLocalTranslation().getZ() - spatial.getLocalTranslation().getZ() < 10 || enemy.getLocalTranslation().getX() - spatial.getLocalTranslation().getX() < 10) {
                 attackEnemy(enemy);
             }
-
         }
-
     }
 
     private void attackEnemy(Spatial newEnemy) {
@@ -65,11 +55,8 @@ public class TowerControl extends AbstractControl {
     public void useBeam() {
         Vector3f beamStartLocation = new Vector3f(spatial.getLocalTranslation().getX(), getTowerHeight(), spatial.getLocalTranslation().getZ());
         beamNode.attachChild(getBeam(beamStartLocation, currentEnemy.getLocalTranslation()));
-        if (currentEnemy.getControl(MonsterControl.class) != null) {
-            currentEnemy.getControl(MonsterControl.class).decreaseHealth((int) spatial.getUserData("damage"));
-        } else {
-            beamNode.detachAllChildren();
-        }
+        currentEnemy.getControl(MonsterControl.class).decreaseHealth((int) spatial.getUserData("damage"));
+
 
 
     }
