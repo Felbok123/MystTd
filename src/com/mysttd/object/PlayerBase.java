@@ -1,15 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mysttd.object;
 
 import com.jme3.scene.Node;
 
-/**
- *
- * @author Odium
- */
 public class PlayerBase {
 
     private Node base;
@@ -36,8 +28,5 @@ public class PlayerBase {
         }
 
         base.setUserData("health", getBaseHp() - hp);
-        if (getBaseHp() == 0) {
-            System.out.println("GAME OVER");
-        }
     }
 }

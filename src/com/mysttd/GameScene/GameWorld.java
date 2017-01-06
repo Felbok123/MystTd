@@ -29,6 +29,7 @@ import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.mysstd.control.*;
 import com.mysstd.monsters.Concorde;
 import com.mysstd.monsters.Squidly;
+import com.mysstd.monsters.Tie;
 import com.mysttd.object.PlayerBase;
 import com.mysttd.object.Tower;
 
@@ -51,6 +52,7 @@ public class GameWorld extends AbstractAppState {
     private boolean isGameOver = false;
     private boolean isGamePaused = false;
     private boolean isAddingTower = false;
+    private boolean hasGold = false;
     private static final String ADD_TOWER = "add tower";
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
@@ -61,10 +63,9 @@ public class GameWorld extends AbstractAppState {
     private Vector3f camLeft = new Vector3f();
     private PlayerBase base;
     private int baseHealth = 50;
-    private MonsterMovement monstMov;
+    private MonsterMovement monsterMovement;
     private long initialTime;
     private long currentTime;
-    private long initialTime2;
     private long timer2;
     private int gold;
     private float timerBeam = 0;
@@ -89,8 +90,8 @@ public class GameWorld extends AbstractAppState {
 
         attachNodes();
 
-        setGold(50);
-        initialTime2 = System.currentTimeMillis();
+        setGold(60);
+
         initialTime = System.currentTimeMillis();
     }
 
@@ -141,6 +142,26 @@ public class GameWorld extends AbstractAppState {
 
     }
 
+    private void keepPlayerInWorld() {
+        if (player.getPhysicsLocation().getX() < -163f) {
+            player.setPhysicsLocation(new Vector3f(-162.9f, player.getPhysicsLocation().getY(), player.getPhysicsLocation().getZ()));
+
+        } else if (player.getPhysicsLocation().getX() > 91.926254f) {
+            player.setPhysicsLocation(new Vector3f(91.57938f, player.getPhysicsLocation().getY(), player.getPhysicsLocation().getZ()));
+
+        }
+        if (player.getPhysicsLocation().getZ() < -140.23592f) {
+            player.setPhysicsLocation(new Vector3f(player.getPhysicsLocation().getX(), player.getPhysicsLocation().getY(), -140f));
+
+        } else if (player.getPhysicsLocation().getZ() > 115.27644f) {
+            player.setPhysicsLocation(new Vector3f(player.getPhysicsLocation().getX(), player.getPhysicsLocation().getY(), 115f));
+
+        }
+        if (player.getPhysicsLocation().getY() < -20f) {
+            player.setPhysicsLocation(new Vector3f(50, 5, 5));
+        }
+    }
+
     private void setUpKeys() {
         inputManager.addMapping(ADD_TOWER, new KeyTrigger(KeyInput.KEY_RETURN));
         inputManager.addListener(actionListener, ADD_TOWER);
@@ -160,24 +181,31 @@ public class GameWorld extends AbstractAppState {
     private ActionListener movmentListener = new ActionListener() {
         @Override
         public void onAction(String binding, boolean isPressed, float tpf) {
-            if (binding.equals("Left")) {
-                left = isPressed;
-            } else if (binding.equals("Right")) {
-                right = isPressed;
-            } else if (binding.equals("Up")) {
-                up = isPressed;
-            } else if (binding.equals("Down")) {
-                down = isPressed;
-            } else if (binding.equals("1")) {
-                if (isPressed) {
-                }
+            switch (binding) {
+                case "Left":
+                    left = isPressed;
+                    break;
+                case "Right":
+                    right = isPressed;
+                    break;
+                case "Up":
+                    up = isPressed;
+                    break;
+                case "Down":
+                    down = isPressed;
+                    break;
+                case "1":
+                    if (isPressed) {
+                        player.setPhysicsLocation(new Vector3f(50, 5, 5));
+                    }
+                    break;
             }
         }
     };
     private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
-            if (name.equals(ADD_TOWER) && isPressed && isAddingTower) {
+            if (name.equals(ADD_TOWER) && isPressed && isAddingTower && hasGold) {
                 Spatial tower;
 
                 Vector3f towerLocation = new Vector3f(camera.getLocation().getX(), 0, camera.getLocation().getZ());
@@ -188,8 +216,8 @@ public class GameWorld extends AbstractAppState {
                         decreaseGold(20);
                         break;
                     case "lightTower":
-                        tower = Tower.generate(assetManager, Tower.LIGHT, 5);
-                        decreaseGold(30);
+                        tower = Tower.generate(assetManager, Tower.LIGHT, 2);
+                        decreaseGold(20);
                         break;
                     default:
                         gui.setSelectedTower("");
@@ -202,7 +230,7 @@ public class GameWorld extends AbstractAppState {
 
 
                 towerNode.attachChild(tower);
-                //  decreaseGold(20);
+
                 gui.setSelectedTower("");
 
                 isAddingTower = false;
@@ -235,6 +263,9 @@ public class GameWorld extends AbstractAppState {
 
     @Override
     public void update(float tpf) {
+        keepPlayerInWorld();
+
+        checkBudget();
 
         timerBeam += tpf;
         if (timerBeam > 30 * tpf) {
@@ -263,6 +294,7 @@ public class GameWorld extends AbstractAppState {
         }
         player.setWalkDirection(walkDirection);
         camera.setLocation(player.getPhysicsLocation());
+
         if (base.getBaseHp() <= 0) {
             System.out.println("Game over");
             base.getBase().detachAllChildren();
@@ -275,36 +307,39 @@ public class GameWorld extends AbstractAppState {
 
         currentTime = System.currentTimeMillis();
 
-        monstMov = new MonsterMovement(enemyNode, base);
+        monsterMovement = new MonsterMovement(enemyNode, base);
 
-        if (currentTime - initialTime >= 4000) {
-            /*
-             Teapot teapot = new Teapot(assetManager, enemyNode);
-             teapot.addEnemyControl(new MonsterControl(this));
-             monstMov.moveMonster(teapot.getMonsterModel(), monstMov.initNormalWaypoints(assetManager), (int) 1.5, 49);
-             */
-        }
-
-
-
-        if (currentTime - initialTime2 >= 6000) {
+        if (currentTime - initialTime >= 6000) {
 
             Squidly squid = new Squidly(assetManager, enemyNode);
             squid.addEnemyControl(new MonsterControl(this));
-            monstMov.moveMonster(squid.getMonsterModel(), monstMov.initNormalWaypoints(assetManager), 1, 60);
+            monsterMovement.moveMonster(squid.getMonsterModel(), monsterMovement.initNormalWaypoints(assetManager), 1, 60);
+            long timer = System.currentTimeMillis();
 
-
-
-            if (timer2 + 3000 >= 500) {
+            if (timer + 5 >= 100) {
+                Tie tie = new Tie(assetManager, enemyNode);
+                tie.addEnemyControl(new MonsterControl(this));
+                monsterMovement.moveMonster(tie.getMonsterModel(), monsterMovement.initSkyWaypoints(assetManager), 1, 80);
+            }
+            if (timer2 + 30 >= 50) {
 
                 Concorde bomber = new Concorde(assetManager, enemyNode);
                 bomber.addEnemyControl(new MonsterControl(this));
-                monstMov.moveMonster(bomber.getMonsterModel(), monstMov.initSkyWaypoints(assetManager), 1, 50);
+                monsterMovement.moveMonster(bomber.getMonsterModel(), monsterMovement.initSkyWaypoints(assetManager), 1, 50);
 
             }
             initialTime = System.currentTimeMillis();
             timer2 = System.currentTimeMillis();
-            initialTime2 = System.currentTimeMillis();
+
+        }
+    }
+
+    private void checkBudget() {
+        if (getGold() > 21) {
+            hasGold = true;
+        }
+        if (getGold() <= 19) {
+            hasGold = false;
         }
     }
 

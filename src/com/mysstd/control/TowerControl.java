@@ -16,7 +16,6 @@ public class TowerControl extends AbstractControl {
 
     private GameWorld gameState;
     private Node beamNode;
-    // private boolean previousEnemy
     private Spatial currentEnemy;
 
     public TowerControl(GameWorld gameState) {
@@ -40,7 +39,7 @@ public class TowerControl extends AbstractControl {
 
         }
 
-        useBeam();
+        shootBeam();
         if (currentEnemy.getControl(MonsterControl.class) != null) {
             if (currentEnemy.getControl(MonsterControl.class).getHealth() <= 0) {
                 currentEnemy = null;
@@ -49,10 +48,11 @@ public class TowerControl extends AbstractControl {
 
         } else {
             currentEnemy = null;
+            beamNode.detachAllChildren();
         }
     }
 
-    public void useBeam() {
+    public void shootBeam() {
         Vector3f beamStartLocation = new Vector3f(spatial.getLocalTranslation().getX(), getTowerHeight(), spatial.getLocalTranslation().getZ());
         beamNode.attachChild(getBeam(beamStartLocation, currentEnemy.getLocalTranslation()));
         currentEnemy.getControl(MonsterControl.class).decreaseHealth((int) spatial.getUserData("damage"));

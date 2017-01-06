@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mysstd.monsters;
 
 import com.jme3.asset.AssetManager;
@@ -9,7 +5,6 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 
 /**
  *
@@ -26,10 +21,10 @@ public final class Teapot extends AbstractMonster {
         DirectionalLight dl = new DirectionalLight();
         dl.setColor(ColorRGBA.White);
         monsterModel = assetManager.loadModel("Models/Teapot.j3o");
-        monsterModel.setName("Teapot" + monsterCount++);
+        monsterModel.setName("Teapot");
         monsterModel.setUserData("health", 2000);
         monsterModel.setUserData("damg", 2);
-        monsterModel.setUserData("gold", 5);
+        monsterModel.setUserData("gold", 1);
 
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         mat.setFloat("Shininess", 1f);

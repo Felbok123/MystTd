@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mysttd.GameScene;
 
 import com.jme3.app.Application;
@@ -15,12 +11,10 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 
-/**
- *
- * @author Odium
- */
+
 public class GameGui extends AbstractAppState {
 
     String[] optionNames = {"laserTower", "lightTower",};
@@ -36,7 +30,7 @@ public class GameGui extends AbstractAppState {
     private boolean isInventoryToggled = false;
     private boolean laserTowerSelected = false;
     private boolean lightTowerSelected = false;
-//    private boolean unknownTowerSelected = false;
+
 
     public GameGui(GameWorld gameState) {
         this.gameState = gameState;
@@ -53,7 +47,7 @@ public class GameGui extends AbstractAppState {
         initGuiElements();
 
         initKeyboardControls();
-        //showBudget();
+     
     }
 
     private void initGuiElements() {
@@ -111,8 +105,6 @@ public class GameGui extends AbstractAppState {
                     highlightInventoryOption("laserTower");
                     return;
                 }
-
-                // highlightInventoryOption("laserTower");
             }
 
             if (name.equals(MOVE_LEFT) && isInventoryToggled && !isPressed) {
@@ -139,6 +131,7 @@ public class GameGui extends AbstractAppState {
                 resetInventoryOptions();
                 option = (Picture) simpleApp.getGuiNode().getChild(desiredOption);
                 option.setImage(simpleApp.getAssetManager(), "Interface/laserTowerHover.png", true);
+                setLaserTowerText(true);
                 laserTowerSelected = true;
                 break;
 
@@ -146,6 +139,7 @@ public class GameGui extends AbstractAppState {
                 resetInventoryOptions();
                 option = (Picture) simpleApp.getGuiNode().getChild(desiredOption);
                 option.setImage(simpleApp.getAssetManager(), "Interface/lightTowerHover.png", true);
+                setLightTowerText(true);
                 lightTowerSelected = true;
                 break;
 
@@ -167,9 +161,10 @@ public class GameGui extends AbstractAppState {
             Picture option = (Picture) simpleApp.getGuiNode().getChild(optionNames[i]);
             option.setImage(simpleApp.getAssetManager(), "Interface/" + optionNames[i] + ".png", true);
         }
+        setLaserTowerText(false);
+        setLightTowerText(false);
         laserTowerSelected = false;
         lightTowerSelected = false;
-        //   unknownTowerSelected = false;
     }
 
     private void addInventoryOptions() {
@@ -184,7 +179,6 @@ public class GameGui extends AbstractAppState {
             simpleApp.getGuiNode().attachChild(option);
         }
 
-
         highlightInventoryOption("laserTower");
     }
 
@@ -198,6 +192,9 @@ public class GameGui extends AbstractAppState {
             for (int i = 0; i < optionNames.length; i++) {
                 simpleApp.getGuiNode().getChild(optionNames[i]).removeFromParent();
             }
+
+            setLaserTowerText(false);
+            setLightTowerText(false);
 
             simpleApp.getGuiNode().getChild("inventoryBackground").removeFromParent();
 
@@ -232,10 +229,70 @@ public class GameGui extends AbstractAppState {
         BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
         BitmapText goldText = new BitmapText(myFont);
         goldText.setName("goldText");
-        goldText.setSize(myFont.getCharSet().getRenderedSize());
+        goldText.setSize(40f);
         goldText.setText(Integer.toString(gameState.getGold()));
         goldText.move(92, 86, 0);
         simpleApp.getGuiNode().attachChild(goldText);
+    }
+
+    private void setLaserTowerText(boolean canSetText) {
+        if (canSetText) {
+            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
+            BitmapText laserTowerText = new BitmapText(myFont);
+            laserTowerText.setName("laserTowerText");
+            laserTowerText.setSize(myFont.getCharSet().getRenderedSize());
+            laserTowerText.setText("Laser       20");
+            laserTowerText.move(420, 160, 0);
+            simpleApp.getGuiNode().attachChild(laserTowerText);
+
+            Picture goldIcon = new Picture("goldIcon2");
+            goldIcon.setImage(simpleApp.getAssetManager(), "Interface/goldbig.png", true);
+            goldIcon.setWidth(50);
+            goldIcon.setHeight(50);
+            goldIcon.move(645, 120, 0);
+            simpleApp.getGuiNode().attachChild(goldIcon);
+            return;
+        }
+
+        Spatial text = simpleApp.getGuiNode().getChild("laserTowerText");
+        if (text != null) {
+            text.removeFromParent();
+        }
+
+        Spatial textIcon = simpleApp.getGuiNode().getChild("goldIcon2");
+        if (textIcon != null) {
+            textIcon.removeFromParent();
+        }
+    }
+
+    private void setLightTowerText(boolean canSetText) {
+        if (canSetText) {
+            BitmapFont myFont = simpleApp.getAssetManager().loadFont("Interface/Fonts/SketchFlowPrint2.fnt");
+            BitmapText lightTowerText = new BitmapText(myFont);
+            lightTowerText.setName("lightTowerText");
+            lightTowerText.setSize(myFont.getCharSet().getRenderedSize());
+            lightTowerText.setText("Light        20");
+            lightTowerText.move(700, 160, 0);
+            simpleApp.getGuiNode().attachChild(lightTowerText);
+
+            Picture goldIcon = new Picture("goldIcon1");
+            goldIcon.setImage(simpleApp.getAssetManager(), "Interface/goldbig.png", true);
+            goldIcon.setWidth(50);
+            goldIcon.setHeight(50);
+            goldIcon.move(920, 120, 0);
+            simpleApp.getGuiNode().attachChild(goldIcon);
+            return;
+        }
+
+        Spatial text = simpleApp.getGuiNode().getChild("lightTowerText");
+        if (text != null) {
+            text.removeFromParent();
+        }
+
+        Spatial textIcon = simpleApp.getGuiNode().getChild("goldIcon1");
+        if (textIcon != null) {
+            textIcon.removeFromParent();
+        }
     }
 
     public void setSelectedTower(String tower) {

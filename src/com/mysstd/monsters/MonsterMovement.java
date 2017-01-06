@@ -15,7 +15,6 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.mysttd.object.PlayerBase;
-import com.mysttd.GameScene.GameWorld;
 
 /**
  *
@@ -26,7 +25,6 @@ public class MonsterMovement {
     private Node enemyNode;
     private MotionPath path;
     private PlayerBase base;
-    private GameWorld gameWorld;
 
     public MonsterMovement(Node enemyNode, PlayerBase base) {
         this.enemyNode = enemyNode;
@@ -54,8 +52,7 @@ public class MonsterMovement {
         path.setCurveTension(0.009f);
         path.setPathSplineType(Spline.SplineType.Linear);
 
-        //  path.enableDebugShape(assetManager, rootNode);
-        // path.disableDebugShape();
+
 
 
         path.addListener(new MotionPathListener() {
@@ -67,6 +64,7 @@ public class MonsterMovement {
                     base.removeHealth((Integer) control.getSpatial().getUserData("damg"));
                     System.out.println("Your base is under attack! " + control.getSpatial().getName());
                     System.out.println("Your base has : " + base.getBaseHp() + " health left");
+                    control.getSpatial().setUserData("health", 0);
                     enemyNode.detachChild(control.getSpatial());
 
                 }
@@ -95,9 +93,6 @@ public class MonsterMovement {
         path.setCurveTension(0.009f);
         path.setPathSplineType(Spline.SplineType.Linear);
 
-        //  path.enableDebugShape(assetManager, rootNode);
-        // path.disableDebugShape();
-
 
         path.addListener(new MotionPathListener() {
             @Override
@@ -108,6 +103,7 @@ public class MonsterMovement {
                     base.removeHealth((Integer) control.getSpatial().getUserData("damg"));
                     System.out.println("Your base is under attack! " + control.getSpatial().getName());
                     System.out.println("Your base has : " + base.getBaseHp() + " health left");
+                    control.getSpatial().setUserData("health", 0);
                     enemyNode.detachChild(control.getSpatial());
 
                 }

@@ -2,13 +2,8 @@ package com.mysstd.start;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
-import com.mysttd.intro.IntroMeny;
+import com.mysttd.intro.IntroMenu;
 
-/**
- * test
- *
- * @author normenhansen
- */
 public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
@@ -33,7 +28,7 @@ public class Main extends SimpleApplication {
         setDisplayStatView(false);
         flyCam.setDragToRotate(false);
 
-        stateManager.attach(new IntroMeny());
+        stateManager.attach(new IntroMenu());
 
 
     }

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mysstd.monsters;
 
 import com.jme3.asset.AssetManager;
@@ -10,10 +6,6 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.mysstd.control.MonsterControl;
 
-/**
- *
- * @author Odium
- */
 public abstract class AbstractMonster {
 
     protected Spatial monsterModel;
